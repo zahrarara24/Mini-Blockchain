@@ -41,6 +41,7 @@ def calculate_expected_hashes():
     }
 
 def test_merkle_root_matches_expected():
+    # Gunakan hash yang dihitung ulang, bukan dari PDF
     exp = calculate_expected_hashes()
     
     root = merkle_root(TXS)
@@ -50,14 +51,23 @@ def test_merkle_root_matches_expected():
     assert root == exp["ROOT"], f"Merkle root mismatch: {root} != {exp['ROOT']}"
 
 def test_pow_and_chain_validation():
-    genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 3), [])
-    blk = mine_block(genesis, TXS, difficulty=3)
+    genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 4), [])
+    blk = mine_block(genesis, TXS, difficulty=4)
     assert validate_chain([genesis, blk]), "Chain should be valid"
+
+# Acceptance test untuk proof 
+from chain import merkle_proof, verify_proof
+
+def test_merkle_proof_T3():
+    root = merkle_root(TXS)
+    proof = merkle_proof(TXS, index=2)  # T3 = index 2 (0-based)
+    assert verify_proof(T3, proof, root), "Proof(T3) should verify to ROOT"
 
 if __name__ == "__main__":
     try:
         test_merkle_root_matches_expected()
         test_pow_and_chain_validation()
+        test_merkle_proof_T3()  
         print("All checks passed.")
     except AssertionError as e:
         print("TEST FAIL:", e)
