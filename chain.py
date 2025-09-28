@@ -118,7 +118,7 @@ def verify_proof(leaf_tx: dict, proof: List[Tuple[str,str]], root_hex: str) -> b
 
 # Demo minimal 
 if __name__ == "__main__":
-    genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 4), [])
+    genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 3), [])
     txs = [
         {"from":"Alice","to":"Bob","amt":10},
         {"from":"Bob","to":"Carol","amt":5},
@@ -126,6 +126,7 @@ if __name__ == "__main__":
         {"from":"Dave","to":"Alice","amt":1},
     ]
     
-    new_blk = mine_block(genesis, txs, difficulty=4)
+    new_blk = mine_block(genesis, txs, difficulty=3)
     print("Block hash:", new_blk.header.hash())
     print("Valid chain?", validate_chain([genesis, new_blk]))
+
