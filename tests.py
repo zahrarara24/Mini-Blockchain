@@ -51,7 +51,7 @@ def test_merkle_root_matches_expected():
     assert root == exp["ROOT"], f"Merkle root mismatch: {root} != {exp['ROOT']}"
 
 def test_pow_and_chain_validation():
-    genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 4), [])
+    genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 3), [])
     blk = mine_block(genesis, TXS, difficulty=4)
     assert validate_chain([genesis, blk]), "Chain should be valid"
 
@@ -72,3 +72,4 @@ if __name__ == "__main__":
     except AssertionError as e:
         print("TEST FAIL:", e)
         sys.exit(1)
+
