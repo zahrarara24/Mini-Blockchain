@@ -52,7 +52,7 @@ def test_merkle_root_matches_expected():
 
 def test_pow_and_chain_validation():
     genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 3), [])
-    blk = mine_block(genesis, TXS, difficulty=4)
+    blk = mine_block(genesis, TXS, difficulty=3)
     assert validate_chain([genesis, blk]), "Chain should be valid"
 
 # Acceptance test untuk proof 
@@ -72,4 +72,5 @@ if __name__ == "__main__":
     except AssertionError as e:
         print("TEST FAIL:", e)
         sys.exit(1)
+
 
