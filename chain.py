@@ -75,9 +75,50 @@ def validate_chain(chain: List[Block]) -> bool:
             return False
     return True
 
-# Demo minimal (boleh dipakai saat pengujian manual)
+# Tambahkan ke chain.py
+from typing import Tuple
+
+def merkle_proof(txs: List[dict], index: int):
+    """Return list of (sibling_hash, position) from leaf->root.
+    position: 'left' atau 'right' relatif terhadap hash yang kita pegang."""
+    if not txs: 
+        return []
+    
+    # Bangun level daun (hash tx) sambil simpan jejak indeks
+    level = [sha256_hex(json.dumps(tx, sort_keys=True).encode()) for tx in txs]
+    idx = index
+    proof = []
+    
+    while len(level) > 1:
+        if len(level) % 2 == 1:
+            level.append(level[-1])
+        
+        pair_idx = idx ^ 1
+        position = "right" if pair_idx > idx else "left"
+        sibling = level[pair_idx]
+        proof.append((sibling, position))
+        
+        # Naik level
+        idx //= 2
+        nxt = []
+        for i in range(0, len(level), 2):
+            nxt.append(sha256_hex(bytes.fromhex(level[i]) + bytes.fromhex(level[i+1])))
+        level = nxt
+    
+    return proof
+
+def verify_proof(leaf_tx: dict, proof: List[Tuple[str,str]], root_hex: str) -> bool:
+    digest = sha256_hex(json.dumps(leaf_tx, sort_keys=True).encode())
+    for sib, pos in proof:
+        if pos == "right":
+            digest = sha256_hex(bytes.fromhex(digest) + bytes.fromhex(sib))
+        else: # 'left'
+            digest = sha256_hex(bytes.fromhex(sib) + bytes.fromhex(digest))
+    return digest == root_hex
+
+# Demo minimal 
 if __name__ == "__main__":
-    genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 3), [])
+    genesis = Block(BlockHeader(0, time.time(), "0"*64, "0"*64, 0, 4), [])
     txs = [
         {"from":"Alice","to":"Bob","amt":10},
         {"from":"Bob","to":"Carol","amt":5},
@@ -85,6 +126,6 @@ if __name__ == "__main__":
         {"from":"Dave","to":"Alice","amt":1},
     ]
     
-    new_blk = mine_block(genesis, txs, difficulty=3)
+    new_blk = mine_block(genesis, txs, difficulty=4)
     print("Block hash:", new_blk.header.hash())
     print("Valid chain?", validate_chain([genesis, new_blk]))
