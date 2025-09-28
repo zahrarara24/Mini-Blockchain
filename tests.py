@@ -41,7 +41,6 @@ def calculate_expected_hashes():
     }
 
 def test_merkle_root_matches_expected():
-    # Gunakan hash yang dihitung ulang, bukan dari PDF
     exp = calculate_expected_hashes()
     
     root = merkle_root(TXS)
@@ -59,7 +58,7 @@ if __name__ == "__main__":
     try:
         test_merkle_root_matches_expected()
         test_pow_and_chain_validation()
-        print("🎉 All checks passed.")
+        print("All checks passed.")
     except AssertionError as e:
-        print("❌ TEST FAIL:", e)
+        print("TEST FAIL:", e)
         sys.exit(1)
