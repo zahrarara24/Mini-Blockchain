@@ -41,7 +41,7 @@ def calculate_expected_hashes():
     }
 
 def test_merkle_root_matches_expected():
-    # Gunakan hash yang dihitung ulang, bukan dari PDF
+    # Gunakan hash yang dihitung ulang
     exp = calculate_expected_hashes()
     
     root = merkle_root(TXS)
@@ -72,5 +72,6 @@ if __name__ == "__main__":
     except AssertionError as e:
         print("TEST FAIL:", e)
         sys.exit(1)
+
 
 
